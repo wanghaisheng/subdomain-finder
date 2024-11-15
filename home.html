@@ -1,0 +1,471 @@
+<html>
+<head>
+  <base href="/" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SubdomainScout - Advanced Subdomain Discovery Tool</title>
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --background: #f8fafc;
+      --text: #1e293b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--background);
+      color: var(--text);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    .search-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      margin: 2rem 0;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .domain-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .domain-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .search-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .search-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .results {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      overflow: hidden;
+    }
+
+    .results-header {
+      padding: 1rem;
+      background: #f1f5f9;
+      font-weight: 600;
+      display: grid;
+      grid-template-columns: 1fr 150px 150px;
+      gap: 1rem;
+    }
+
+    .results-item {
+      padding: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: grid;
+      grid-template-columns: 1fr 150px 150px;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .status-active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-inactive {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* New styles for added sections */
+    .hero {
+      text-align: center;
+      padding: 4rem 0;
+      background: linear-gradient(to bottom, #f0f7ff, var(--background));
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: #64748b;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .section {
+      padding: 4rem 0;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 3rem;
+      color: var(--text);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    .feature-card svg {
+      width: 48px;
+      height: 48px;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .feature-card p {
+      color: #64748b;
+    }
+
+    .use-case {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    .how-to-steps {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .step-number {
+      background: var(--primary);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .faq {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    .faq-item h3 {
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .faq-item p {
+      color: #64748b;
+    }
+
+    .footer {
+      background: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+      font-size: 0.875rem;
+    }
+  </style>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container">
+  <header class="header">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+      SubdomainScout
+    </div>
+    <nav class="nav-menu">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#comparison" class="nav-link">Comparison</a>
+      <a href="#use-cases" class="nav-link">Use Cases</a>
+      <a href="#how-to" class="nav-link">How To</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Discover Hidden Subdomains with SubdomainScout</h1>
+    <p>Our advanced subdomain finder tool makes subdomain enumeration simple and efficient. Whether you're looking to create a subdomain, understand subdomain vs subdirectory differences, or perform comprehensive subdomain enumeration, SubdomainScout has you covered.</p>
+  </section>
+
+  <div class="search-container">
+    <div class="input-group">
+      <input type="text" class="domain-input" placeholder="Enter domain (e.g., example.com)" id="domainInput">
+      <button class="search-btn" id="searchBtn">Search Subdomains</button>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Scanning subdomains...</p>
+  </div>
+
+  <div class="results" id="results">
+    <div class="results-header">
+      <div>Subdomain</div>
+      <div>Status</div>
+      <div>IP Address</div>
+    </div>
+    <div id="resultsList"></div>
+  </div>
+
+  <section id="comparison" class="section">
+    <h2 class="section-title">SubdomainScout vs Competitors</h2>
+    <div class="comparison-table">
+      <!-- Your comparison table code here -->
+    </div>
+  </section>
+
+  <section id="features" class="section">
+    <h2 class="section-title">Comprehensive Subdomain Discovery Features</h2>
+    <div class="features-grid">
+      <!-- Your feature cards here -->
+    </div>
+  </section>
+
+  <section id="use-cases" class="section">
+    <h2 class="section-title">Use Cases</h2>
+    <div class="use-case">
+      <h3>Security Assessments</h3>
+      <p>Perfect for penetration testers and security professionals conducting thorough domain assessments.</p>
+    </div>
+    <div class="use-case">
+      <h3>Asset Discovery</h3>
+      <p>Help organizations maintain an up-to-date inventory of their digital assets and infrastructure.</p>
+    </div>
+  </section>
+
+  <section id="how-to" class="section">
+    <h2 class="section-title">How To Create and Find Subdomains</h2>
+    <div class="how-to-steps">
+      <!-- Steps for how-to here -->
+    </div>
+  </section>
+
+  <section id="faq" class="section">
+    <h2 class="section-title">Frequently Asked Questions about Subdomains</h2>
+    <div class="faq">
+      <!-- FAQ items here -->
+    </div>
+  </section>
+</div>
+
+<footer class="footer">
+  <div class="footer-content">
+    <div class="logo">SubdomainScout</div>
+    <div class="footer-links">
+      <a href="/privacy.html" class="nav-link">Privacy Policy</a>
+      <a href="/terms.html" class="nav-link">Terms of Service</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('searchBtn').addEventListener('click', async () => {
+    const domain = document.getElementById('domainInput').value;
+    if (!domain) return;
+
+    const loading = document.getElementById('loading');
+    const resultsList = document.getElementById('resultsList');
+
+    loading.style.display = 'block';
+    resultsList.innerHTML = '';
+
+    try {
+      const apiUrl = `https://your-cloudflare-worker-url.com?domain=${encodeURIComponent(domain)}&option=2`; // Use the correct URL for your CF worker
+      const response = await fetch(apiUrl);
+      const csvData = await response.text();
+
+      // Parse CSV data (or any response format you return from your worker)
+      const lines = csvData.split("\n");
+      const subdomains = lines.slice(1); // Skip header
+
+      subdomains.forEach(subdomain => {
+        if (subdomain.trim()) {
+          const resultItem = document.createElement('div');
+          resultItem.className = 'results-item';
+          resultItem.innerHTML = `
+            <div>${subdomain}</div>
+            <div><span class="status-badge status-active">active</span></div>
+            <div>IP Address</div> <!-- Add IP resolution logic if necessary -->
+          `;
+          resultsList.appendChild(resultItem);
+        }
+      });
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      loading.style.display = 'none';
+      alert('An error occurred while fetching subdomains.');
+    }
+
+    loading.style.display = 'none';
+  });
+</script>
+
+</body>
+</html>

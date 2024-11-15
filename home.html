@@ -436,7 +436,8 @@
     resultsList.innerHTML = '';
 
     try {
-      const apiUrl = `https://your-cloudflare-worker-url.com?domain=${encodeURIComponent(domain)}&option=2`; // Use the correct URL for your CF worker
+    
+      const apiUrl = `https://wayback-subdomain-finder.v2ray-tokyo.workers.dev/?domain=${encodeURIComponent(domain)}&option=2`; // Use the correct URL for your CF worker
       const response = await fetch(apiUrl);
       const csvData = await response.text();
 
